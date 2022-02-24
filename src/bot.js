@@ -84,9 +84,14 @@ client.login(token);
 client.users.fetch('116976756581203972');
 client.users.fetch('139462400658112513');
 
-async function processMovieRequest(interaction, test) {
+async function processMovieRequest(interaction) {
     await interaction.deferReply()
-    const movieName = interaction.options.getString("movie_name")
+    let test = false
+    const interactionString = interaction.options.getString("movie_name")
+    if (interactionString.endsWith("(test)")) {
+        test = true
+    }
+    const movieName = interactionString.replace("(test)", "")
     try {
         searchTMDBMovie(movieName, function (movies) {
             let adminID = "116976756581203972";
@@ -105,7 +110,7 @@ async function processMovieRequest(interaction, test) {
                     );
                 interaction.editReply({content: "Select a movie to request.", components: [button]})
 
-                sendTMDBMovies(interaction, movies, adminID, uuid)
+                sendTMDBMovies(interaction, movies, adminID, uuid, movieName)
             } else {
                 interaction.editReply("No movies found with that name. Sending request to Admin.")
                 client.users.cache.get(adminID).send({
@@ -126,9 +131,14 @@ async function processMovieRequest(interaction, test) {
 
 }
 
-async function processShowRequest(interaction, test) {
+async function processShowRequest(interaction) {
     await interaction.deferReply()
-    const showName = interaction.options.getString("show_name")
+    let test = false
+    const interactionString = interaction.options.getString("show_name")
+    if (interactionString.endsWith("(test)")) {
+        test = true
+    }
+    const showName = interactionString.replace("(test)", "")
     try {
 
         searchTMDBShow(showName, function (shows) {
@@ -148,7 +158,7 @@ async function processShowRequest(interaction, test) {
                     );
                 interaction.editReply({content: "Select a show to request.", components: [button]})
 
-                sendTMDBShows(interaction, shows, adminID, uuid)
+                sendTMDBShows(interaction, shows, adminID, uuid, showName)
             } else {
                 interaction.editReply(`No shows found with the name "${showName}". Sending request to Admin.`)
                 client.users.cache.get(adminID).send({
@@ -168,7 +178,7 @@ async function processShowRequest(interaction, test) {
     }
 }
 
-async function sendTMDBMovies(interaction, movies, adminID, cancelId) {
+async function sendTMDBMovies(interaction, movies, adminID, cancelId, movieName) {
     const maxI = movies.length > 5 ? 5 : movies.length
     const movieMessages = new Map()
 
@@ -188,14 +198,14 @@ async function sendTMDBMovies(interaction, movies, adminID, cancelId) {
         interactionReply.reply({embeds: [embed], components: [button]}).then(message => {
             movieMessages[uuid] = {message: message, embed: embed}
             if (i+1 === maxI) {
-                createCollector(movieMessages, interaction, interactionReply, cancelId, adminID, "Movie")
+                createCollector(movieMessages, interaction, interactionReply, cancelId, adminID, "Movie", movieName)
             }
         })
 
     }
 }
 
-async function sendTMDBShows(interaction, shows, adminID, cancelId) {
+async function sendTMDBShows(interaction, shows, adminID, cancelId, showName) {
     const maxI = shows.length > 5 ? 5 : shows.length
     const showMessages = new Map()
 
@@ -221,14 +231,14 @@ async function sendTMDBShows(interaction, shows, adminID, cancelId) {
     }
 }
 
-function createCollector(map, interaction, interactionReply, cancelId, adminID, showOrMovie) {
+function createCollector(map, interaction, interactionReply, cancelId, adminID, showOrMovie, name) {
     const filter = i => i.customId === cancelId || Object.keys(map).find(value => value === i.customId) != null;
     const collector = interaction.channel
         .createMessageComponentCollector({filter, time: 5000 * 60 })
 
     collector.on('collect', async i => {
         if (i.customId === cancelId) {
-            interactionReply.edit({content: `No ${showOrMovie} was selected. Request not sent.`, components: []})
+            interactionReply.edit({content: `"${name}" did not give the ${showOrMovie} you are looking for. Request not sent.`, components: []})
             Object.keys(map).forEach(key => {
                 try {
                     map[key].message.delete()
