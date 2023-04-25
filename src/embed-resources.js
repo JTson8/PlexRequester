@@ -1,4 +1,4 @@
-const {MessageEmbed} = require("discord.js");
+const {EmbedBuilder} = require("discord.js");
 
 const logger = require('winston');
 
@@ -9,9 +9,10 @@ function embedTMDBShow(client, show) {
     } else if (show.backdrop_path !== null && show.backdrop_path.length !== 0) {
         imageUrl = `https://www.themoviedb.org/t/p/w58_and_h87_face/${show.backdrop_path}`
     }
-
-    return new MessageEmbed()
-        .setColor("DARK_BLUE")
+	
+	console.log(client.user.avatarURL())
+    return new EmbedBuilder()
+        .setColor("DarkOrange")
         .setTitle(show.name)
         .setAuthor({ name: client.user.username, iconURL: 'https://styles.redditmedia.com/t5_2ql7e/styles/communityIcon_mdwl2x2rtzb11.png' })
         .setDescription(((show.overview !== "") ? `||${show.overview}||` : "null"))
@@ -21,7 +22,7 @@ function embedTMDBShow(client, show) {
             { name: 'TMDB', value: `[Link](https://www.themoviedb.org/tv/${show.id})`, inline: true }
         )
         .setTimestamp()
-        .setFooter({text: "", iconURL: client.user.avatarURL });
+        .setFooter({text: "Plex Requester", iconURL: client.user.avatarURL() });
 }
 
 function embedTMDBMovie(client, movie) {
@@ -32,8 +33,8 @@ function embedTMDBMovie(client, movie) {
         imageUrl = `https://www.themoviedb.org/t/p/w58_and_h87_face/${movie.backdrop_path}`
     }
 
-    return new MessageEmbed()
-        .setColor("DARK_ORANGE")
+    return new EmbedBuilder()
+        .setColor("DarkBlue")
         .setTitle(movie.title)
         .setAuthor({ name: client.user.username, iconURL: 'https://styles.redditmedia.com/t5_2ql7e/styles/communityIcon_mdwl2x2rtzb11.png' })
         .setDescription(((movie.overview !== "") ? `||${movie.overview}||` : "null"))
@@ -43,7 +44,7 @@ function embedTMDBMovie(client, movie) {
             { name: 'TMDB', value: `[Link](https://www.themoviedb.org/movie/${movie.id})`, inline: true }
         )
         .setTimestamp()
-        .setFooter({text: "", iconURL: client.user.avatarURL });
+        .setFooter({text: "Plex Requester", iconURL: client.user.avatarURL });
 }
 
 module.exports = {embedTMDBShow, embedTMDBMovie}

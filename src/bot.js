@@ -1,9 +1,9 @@
 // Require the necessary discord.js classes
 
-const {MessageActionRow, MessageButton} = require("discord.js");
+const {ActionRowBuilder, ButtonBuilder, ButtonStyle} = require("discord.js");
 
 const fs = require('fs');
-const { Client, Intents } = require('discord.js');
+const { Client, GatewayIntentBits  } = require('discord.js');
 const { token } = require('../data/config.json');
 const { v4 } = require('uuid');
 
@@ -34,8 +34,8 @@ if (!requestNum) {
 
 // Create a new client instance
 const client = new Client({ intents: [
-    Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS
+    GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions
     ] });
 
 // When the client is ready, run this code (only once)
@@ -103,10 +103,10 @@ async function processMovieRequest(interaction) {
                 const uuid = v4()
                 const button = new MessageActionRow()
                     .addComponents(
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId(uuid)
                             .setLabel("Not what I'm looking for")
-                            .setStyle('DANGER'),
+                            .setStyle(ButtonStyle.Danger),
                     );
                 interaction.editReply({content: "Select a movie to request.", components: [button]})
 
@@ -149,12 +149,12 @@ async function processShowRequest(interaction) {
 
             if (shows !== undefined && shows.length !== undefined && shows.length > 0) {
                 const uuid = v4()
-                const button = new MessageActionRow()
+                const button = new ActionRowBuilder()
                     .addComponents(
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId(uuid)
                             .setLabel("Not what I'm looking for")
-                            .setStyle('DANGER'),
+                            .setStyle(ButtonStyle.Danger),
                     );
                 interaction.editReply({content: "Select a show to request.", components: [button]})
 
@@ -187,12 +187,12 @@ async function sendTMDBMovies(interaction, movies, adminID, cancelId, movieName)
     for (let i = 0; i < maxI; i++) {
         const uuid = v4()
         const embed = embedTMDBMovie(client, movies[i])
-        const button = new MessageActionRow()
+        const button = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId(uuid)
                     .setLabel('Request')
-                    .setStyle('PRIMARY'),
+                    .setStyle(ButtonStyle.Primary),
             );
 
         interactionReply.reply({embeds: [embed], components: [button]}).then(message => {
@@ -214,12 +214,12 @@ async function sendTMDBShows(interaction, shows, adminID, cancelId, showName) {
     for (let i = 0; i < maxI; i++) {
         const uuid = v4()
         const embed = embedTMDBShow(client, shows[i])
-        const button = new MessageActionRow()
+        const button = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId(uuid)
                     .setLabel('Request')
-                    .setStyle('PRIMARY'),
+                    .setStyle(ButtonStyle.Primary),
             );
 
         interactionReply.reply({embeds: [embed], components: [button]}).then(message => {
