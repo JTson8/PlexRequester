@@ -101,7 +101,7 @@ async function processMovieRequest(interaction) {
 
             if (movies !== undefined && movies.length !== undefined && movies.length > 0) {
                 const uuid = v4()
-                const button = new MessageActionRow()
+                const button = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
                             .setCustomId(uuid)
