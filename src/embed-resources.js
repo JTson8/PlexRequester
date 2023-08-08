@@ -44,7 +44,7 @@ function embedTMDBMovie(client, movie) {
             { name: 'TMDB', value: `[Link](https://www.themoviedb.org/movie/${movie.id})`, inline: true }
         )
         .setTimestamp()
-        .setFooter({text: "Plex Requester", iconURL: client.user.avatarURL });
+        .setFooter({text: "Plex Requester", iconURL: client.user.avatarURL() });
 }
 
 module.exports = {embedTMDBShow, embedTMDBMovie}
