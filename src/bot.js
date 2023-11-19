@@ -225,7 +225,7 @@ async function sendTMDBShows(interaction, shows, adminID, cancelId, showName) {
         interactionReply.reply({embeds: [embed], components: [button]}).then(message => {
             showMessages[uuid] = {message: message, embed: embed}
             if (i+1 === maxI) {
-                createCollector(showMessages, interaction, interactionReply, cancelId, adminID, "Movie")
+                createCollector(showMessages, interaction, interactionReply, cancelId, adminID, "Show")
             }
         })
     }
