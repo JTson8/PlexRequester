@@ -1,8 +1,9 @@
 // Require the necessary discord.js classes
 
-const {ActionRowBuilder, ButtonBuilder, ButtonStyle} = require("discord.js");
+const {ActionRowBuilder, ButtonBuilder, ButtonStyle, Events} = require("discord.js");
 
 const fs = require('fs');
+const process = require('node:process');
 const { Client, GatewayIntentBits  } = require('discord.js');
 const { token } = require('../data/config.json');
 const { v4 } = require('uuid');
@@ -32,6 +33,10 @@ if (!requestNum) {
     requests = new Map(savedData.requests)
 }
 
+process.on('unhandledRejection', error => {
+	console.error('Unhandled promise rejection:', error);
+});
+
 // Create a new client instance
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions,
@@ -41,6 +46,10 @@ const client = new Client({ intents: [
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
     console.log('Ready!');
+});
+
+client.on(Events.ShardError, error => {
+	console.error('A websocket connection encountered an error:', error);
 });
 
 client.on('interactionCreate', async interaction => {
